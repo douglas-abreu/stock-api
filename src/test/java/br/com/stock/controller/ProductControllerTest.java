@@ -1,19 +1,14 @@
 package br.com.stock.controller;
 
 import br.com.stock.entity.Category;
-import br.com.stock.entity.Permission;
 import br.com.stock.entity.Product;
-import br.com.stock.entity.User;
 import br.com.stock.repository.CategoryRepository;
 import br.com.stock.repository.ProductRepository;
-import br.com.stock.security.jwt.JwtUtils;
-import br.com.stock.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,23 +32,11 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private UserService userService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
     @MockBean
     private CategoryRepository categoryRepository;
 
     @MockBean
     private ProductRepository productRepository;
-
-    @Mock
-    private User user;
-
-    @Mock
-    private Permission permission;
 
     @Mock
     private Category category;
@@ -63,7 +45,7 @@ class ProductControllerTest {
     private Product product;
 
     @Test
-    @DisplayName("Create Product should return status 400")
+    @DisplayName("Create Product with empty fields should return status 400")
     void saveError() throws Exception {
         //ACT
         var om = new ObjectMapper();
@@ -80,7 +62,7 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Update Product should return status 400")
+    @DisplayName("Update Product with empty fields should return status 400")
     void updateError() throws Exception {
         //ARRANGE
         String json = "{" +
@@ -125,7 +107,7 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Create Product should return status 200")
+    @DisplayName("Create Product with correct fields should return status 200")
     void saveSuc() throws Exception {
         //ARRANGE
         String json = "{" +

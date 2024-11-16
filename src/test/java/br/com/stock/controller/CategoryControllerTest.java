@@ -1,18 +1,12 @@
 package br.com.stock.controller;
 
 import br.com.stock.entity.Category;
-import br.com.stock.entity.Permission;
-import br.com.stock.entity.User;
 import br.com.stock.repository.CategoryRepository;
-import br.com.stock.security.jwt.JwtUtils;
-import br.com.stock.service.CategoryService;
-import br.com.stock.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +32,8 @@ class CategoryControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private UserService userService;
-
-    @Mock
-    private CategoryService categoryService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
     @MockBean
     private CategoryRepository categoryRepository;
-
-    @Mock
-    private User user;
-
-    @Mock
-    private Permission permission;
 
     @Mock
     private Category category;
@@ -142,8 +121,8 @@ class CategoryControllerTest {
                     "\"name\": \"Test Test Category\"" +
                 "}";
         BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
-        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
-
+        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(
+                Optional.of(new Category(1,"Test Category")));
 
         //ACT
         var response = mockMvc.perform(
@@ -161,7 +140,8 @@ class CategoryControllerTest {
     void deleteSuccess() throws Exception {
         //ARRANGE
         BDDMockito.given(category.getId()).willReturn(1);
-        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
+        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(
+                Optional.of(new Category(1,"Test Category")));
 
         //ACT
         var response = mockMvc.perform(
