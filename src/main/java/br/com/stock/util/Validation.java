@@ -9,7 +9,6 @@ public class Validation {
         return false;
     }
 
-
     public static String isEmptyFields(Object[][] args){
         String msgErr = "";
         for (int i = 0; i < args.length; i++) {

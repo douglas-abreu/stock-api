@@ -2,8 +2,6 @@ package br.com.stock.controller;
 
 import br.com.stock.entity.User;
 import br.com.stock.model.ApiResponse;
-import br.com.stock.model.JWTResponse;
-import br.com.stock.model.RequestLogin;
 import br.com.stock.security.jwt.JwtResponse;
 import br.com.stock.security.jwt.JwtUtils;
 import br.com.stock.service.UserService;

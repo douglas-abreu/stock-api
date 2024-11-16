@@ -1,10 +1,8 @@
 package br.com.stock.controller;
 
 import br.com.stock.entity.Product;
-import br.com.stock.entity.Product;
 import br.com.stock.model.ApiResponse;
 import br.com.stock.model.PaginatedData;
-import br.com.stock.service.ProductService;
 import br.com.stock.service.ProductService;
 import br.com.stock.service.criteria.ProductCriteria;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +42,5 @@ public class ProductController {
         ApiResponse<?> amendmentApiResponse = service.deleteProduct(id);
         return ResponseEntity.status(amendmentApiResponse.getStatus()).body(amendmentApiResponse);
     }
-
-
-
 
 }
