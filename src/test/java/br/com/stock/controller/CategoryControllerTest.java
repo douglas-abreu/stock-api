@@ -67,7 +67,7 @@ class CategoryControllerTest {
         String json = om.writeValueAsString(category);
 
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.post("/category/create")
+                MockMvcRequestBuilders.post("/category")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -84,7 +84,7 @@ class CategoryControllerTest {
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.put("/category/update")
+                MockMvcRequestBuilders.put("/category")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -122,7 +122,7 @@ class CategoryControllerTest {
         String json = om.writeValueAsString(category);
 
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.post("/category/create")
+                MockMvcRequestBuilders.post("/category")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -147,7 +147,7 @@ class CategoryControllerTest {
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.put("/category/update")
+                MockMvcRequestBuilders.put("/category")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();

@@ -70,7 +70,7 @@ class ProductControllerTest {
         var json = om.writeValueAsString(product);
 
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.post("/product/create")
+                MockMvcRequestBuilders.post("/product")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -83,11 +83,21 @@ class ProductControllerTest {
     @DisplayName("Update Product should return status 400")
     void updateError() throws Exception {
         //ARRANGE
-        String json = "{\"empty-object\":\"empty-object\"}";
+        String json = "{" +
+                "\"id\": 1, " +
+                "\"name\": \"\", " +
+                "\"barCode\": \"\", " +
+                "\"description\": \"\", " +
+                "\"quantity\": 200, " +
+                "\"category\": { \"id\": 1, \"name\": \"category\"}" +
+                "}";
+        BDDMockito.given(category.getId()).willReturn(1);
+        BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
+        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.put("/product/update")
+                MockMvcRequestBuilders.put("/product")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -97,7 +107,7 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Delete Product should return status 400")
+    @DisplayName("Delete Product not existent register should return status 400")
     void deleteError() throws Exception {
         //ARRANGE
         BDDMockito.given(product.getId()).willReturn(1);
@@ -118,17 +128,18 @@ class ProductControllerTest {
     @DisplayName("Create Product should return status 200")
     void saveSuc() throws Exception {
         //ARRANGE
-        BDDMockito.given(category.getName()).willReturn("Test Product");
-        BDDMockito.given(user.getPermission()).willReturn(permission);
-        BDDMockito.given(permission.getId()).willReturn(1);
-        BDDMockito.given(permission.getName()).willReturn("Administrador");
-
+        String json = "{" +
+                "\"id\": 1, " +
+                "\"name\": \"Test Product\", " +
+                "\"barCode\": \"111111111111\", " +
+                "\"description\": \"Test Product\", " +
+                "\"quantity\": 200, " +
+                "\"category\": { \"id\": 1, \"name\": \"category\"}" +
+                "}";
         //ACT
-        ObjectMapper om = new ObjectMapper();
-        String json = om.writeValueAsString(category);
 
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.post("/category/create")
+                MockMvcRequestBuilders.post("/product")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -139,17 +150,24 @@ class ProductControllerTest {
 
 
     @Test
-    @DisplayName("Update Product should return status 200")
+    @DisplayName("Update Product with correct fields should return status 200")
     void updateSuccess() throws Exception {
         //ARRANGE
         String json = "{" +
-                "\"id\": 1," +
-                "\"name\": \"Test Product\"" +
+                "\"id\": 1, " +
+                "\"name\": \"Test Product\", " +
+                "\"barCode\": \"111111111111\", " +
+                "\"description\": \"Test Product\", " +
+                "\"quantity\": 200, " +
+                "\"category\": { \"id\": 1, \"name\": \"category\"}" +
                 "}";
+        BDDMockito.given(category.getId()).willReturn(1);
+        BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
+        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.put("/category/update")
+                MockMvcRequestBuilders.put("/category")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -159,16 +177,16 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Delete Product should return status 200")
+    @DisplayName("Delete Product with existent register should return status 200")
     void deleteSuccess() throws Exception {
         //ARRANGE
-        BDDMockito.given(category.getId()).willReturn(1);
-        //BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Product(1,"Test Product")));
-        BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
+        BDDMockito.given(product.getId()).willReturn(1);
+        BDDMockito.given(productRepository.findById(product.getId())).willReturn(Optional.of(new Product()));
+        BDDMockito.given(productRepository.existsById(product.getId())).willReturn(true);
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.delete("/category/"+category.getId())
+                MockMvcRequestBuilders.delete("/product/"+product.getId())
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
