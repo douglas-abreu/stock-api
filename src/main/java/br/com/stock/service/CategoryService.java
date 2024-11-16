@@ -86,7 +86,7 @@ public class CategoryService {
 		if (status == HttpStatus.OK) {
 			msgSuc = MsgSystem.sucUpdate(Constants.CATEGORIA);
 			if (Validation.isEmptyOrNull(category.getId()) || !repository.existsById(category.getId()))
-				return response.of(HttpStatus.NOT_FOUND, msgSuc = MsgSystem.errGet(Constants.CATEGORIA) + category.getId());
+				return response.of(HttpStatus.NOT_FOUND, msgSuc = MsgSystem.errGet(Constants.CATEGORIA));
 		}
 
 		Category categorySaved = repository.save(category);
