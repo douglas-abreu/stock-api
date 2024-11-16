@@ -1,10 +1,14 @@
 package br.com.stock.controller;
 
+import br.com.stock.entity.User;
 import br.com.stock.model.ApiResponse;
 import br.com.stock.model.JWTResponse;
 import br.com.stock.model.RequestLogin;
+import br.com.stock.security.jwt.JwtResponse;
+import br.com.stock.security.jwt.JwtUtils;
 import br.com.stock.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,26 +18,24 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService service;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> authenticateUser(
-            @RequestBody RequestLogin requestLogin) {
-        ApiResponse<JWTResponse> response = service.authenticateUser(requestLogin);
-        return ResponseEntity.status(response.getStatus()).headers(response.getHeaders()).body(response);
+    public ResponseEntity<ApiResponse<JwtResponse>> authenticateUser(@RequestBody User loginRequest) {
+        ApiResponse<JwtResponse> response = service.login(loginRequest);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PatchMapping("/logout")
-    public ResponseEntity<ApiResponse<?>> logoutUser() {
-        ApiResponse<Boolean> response = service.revokeToken();
-        return ResponseEntity.status(response.getStatus()).headers(response.getHeaders()).body(response);
+    @GetMapping("/token")
+    public ResponseEntity<Boolean> checkToken(@RequestParam String token) {
+        var valid = jwtUtils.validateJwtToken(token);
+        return ResponseEntity.status(valid ? HttpStatus.OK.value() : HttpStatus.FORBIDDEN.value()).body(valid);
     }
 
-    @GetMapping("/logged")
-    public ResponseEntity<ApiResponse<?>> authenticateUser(
-            @RequestHeader("Authorization") String token) {
-        ApiResponse<JWTResponse> response = service.getUserLogged(
-                token.replace("Bearer ", ""));
-        return ResponseEntity.status(response.getStatus()).headers(response.getHeaders()).body(response);
+    @GetMapping("/check")
+    public ResponseEntity<ApiResponse<User>> getUserLogged(){
+        ApiResponse<User> response = service.getUserLogged();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

@@ -39,13 +39,13 @@ public class CategoryService {
 		pageable = PageRequest.of(
 				pageable.getPageNumber(),
 				pageable.getPageSize(),
-				Sort.by(Sort.Direction.ASC, "categoryname", "permission")
+				Sort.by(Sort.Direction.ASC, "name")
 		);
 		Page<Category> efforts = repository.findAll(createSpecification(criteria), pageable);
 
 		final Pagination pagination = Pagination.from(efforts, pageable);
 
-		return response.of(HttpStatus.OK, MsgSystem.sucGet("Lista de usuários"), new PaginatedData<>(efforts.getContent(), pagination));
+		return response.of(HttpStatus.OK, MsgSystem.sucGet("Lista de categorias"), new PaginatedData<>(efforts.getContent(), pagination));
 	}
 
 	public ApiResponse<Category> deleteCategory(Integer id){
@@ -66,8 +66,7 @@ public class CategoryService {
 		Specification<Category> specification = Specification.where(null);
 
 		if (criteria.getKeyword() != null)
-			specification = specification
-					.and(CategoryCriteria.filterByName(criteria.getKeyword()));
+			specification = specification.and(CategoryCriteria.filterByName(criteria.getKeyword()));
 
 		return specification;
 	}
@@ -84,10 +83,11 @@ public class CategoryService {
 		if(!msgErr.isEmpty())
 			return response.of(HttpStatus.BAD_REQUEST, msgErr);
 
-		if (status == HttpStatus.OK)
+		if (status == HttpStatus.OK) {
+			msgSuc = MsgSystem.sucUpdate(Constants.CATEGORIA);
 			if (Validation.isEmptyOrNull(category.getId()) || !repository.existsById(category.getId()))
-				return response.of(HttpStatus.NOT_FOUND,
-						msgSuc = MsgSystem.sucUpdate(Constants.CATEGORIA));
+				return response.of(HttpStatus.NOT_FOUND, msgSuc = MsgSystem.errGet(Constants.CATEGORIA) + category.getId());
+		}
 
 		Category categorySaved = repository.save(category);
 		return response.of(status, msgSuc, categorySaved);

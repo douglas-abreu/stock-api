@@ -1,43 +1,55 @@
 package br.com.stock.security.jwt;
 
-
-import br.com.stock.exceptions.TokenException;
-import br.com.stock.security.type.AuthConfig;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import br.com.stock.security.services.UserDetailsImpl;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Date;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class JwtUtils {
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
+    @Value("${security.jwt.token.secret-key}")
+    private String jwtSecret;
 
-	public String generateJwtTokenWithUsername(String username) {
+    @Value("${security.jwt.token.expire-length}")
+    private int jwtExpirationMs;
 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MILLISECOND,  Integer.parseInt(AuthConfig.EXPIRE_TIME.getConfig()));
-		Date expiresAt = cal.getTime();
-		return JWT.create()
-			.withSubject(username)
-			.withIssuedAt(new Date())
-			.withExpiresAt(expiresAt)
-			.sign(Algorithm.HMAC512(AuthConfig.SECRET_KEY.getConfig().getBytes()));
-	}
+    public String generateJwtToken(Authentication authentication) {
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        return generateJwtTokenWithUsername((userPrincipal.getUsername()));
+    }
 
-	public String validateJwtToken(String token) {
-		try {
-			return JWT.require(Algorithm.HMAC512(AuthConfig.SECRET_KEY.getConfig().getBytes()))
-					.build()
-					.verify(token)
-					.getSubject();
-		} catch (JWTVerificationException e) {
-			throw new TokenException("Token inválido.");
-		}
-	}
+    public String generateJwtTokenWithUsername(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
 
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public boolean validateJwtToken(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            return true;
+        } catch (Exception e) {
+            logger.error("JWT claims string está vazia: {}", e.getMessage());
+            return false;
+        }
+    }
 }

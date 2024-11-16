@@ -21,6 +21,9 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Column(name = "status")
+    private Boolean status = Boolean.FALSE;
+
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinColumn(name = "permissao_id")
     private Permission permission;

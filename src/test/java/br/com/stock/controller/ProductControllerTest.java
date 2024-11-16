@@ -2,10 +2,11 @@ package br.com.stock.controller;
 
 import br.com.stock.entity.Category;
 import br.com.stock.entity.Permission;
+import br.com.stock.entity.Product;
 import br.com.stock.entity.User;
 import br.com.stock.repository.CategoryRepository;
+import br.com.stock.repository.ProductRepository;
 import br.com.stock.security.jwt.JwtUtils;
-import br.com.stock.service.CategoryService;
 import br.com.stock.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -24,31 +25,30 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class CategoryControllerTest {
-
+class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @InjectMocks
     private UserService userService;
 
-    @Mock
-    private CategoryService categoryService;
-
     @Autowired
     private JwtUtils jwtUtils;
 
     @MockBean
     private CategoryRepository categoryRepository;
+
+    @MockBean
+    private ProductRepository productRepository;
 
     @Mock
     private User user;
@@ -59,15 +59,18 @@ class CategoryControllerTest {
     @Mock
     private Category category;
 
+    @Mock
+    private Product product;
+
     @Test
-    @DisplayName("Create Category with empty object should return status 400")
+    @DisplayName("Create Product should return status 400")
     void saveError() throws Exception {
         //ACT
-        ObjectMapper om = new ObjectMapper();
-        String json = om.writeValueAsString(category);
+        var om = new ObjectMapper();
+        var json = om.writeValueAsString(product);
 
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.post("/category/create")
+                MockMvcRequestBuilders.post("/product/create")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -77,14 +80,14 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Update Category with invalid fields should return status 400")
+    @DisplayName("Update Product should return status 400")
     void updateError() throws Exception {
         //ARRANGE
         String json = "{\"empty-object\":\"empty-object\"}";
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.put("/category/update")
+                MockMvcRequestBuilders.put("/product/update")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -94,15 +97,15 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Delete Category with repository not finding register should return status 404")
+    @DisplayName("Delete Product should return status 400")
     void deleteError() throws Exception {
         //ARRANGE
-        BDDMockito.given(category.getId()).willReturn(1);
-        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.empty());
+        BDDMockito.given(product.getId()).willReturn(1);
+        BDDMockito.given(productRepository.findById(product.getId())).willReturn(Optional.empty());
 
         //ACT
         var response = mockMvc.perform(
-                MockMvcRequestBuilders.delete("/category/"+category.getId())
+                MockMvcRequestBuilders.delete("/product/"+category.getId())
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
@@ -112,10 +115,13 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Create Category with correct fields should return status 200")
+    @DisplayName("Create Product should return status 200")
     void saveSuc() throws Exception {
         //ARRANGE
-        BDDMockito.given(category.getName()).willReturn("Test Category");
+        BDDMockito.given(category.getName()).willReturn("Test Product");
+        BDDMockito.given(user.getPermission()).willReturn(permission);
+        BDDMockito.given(permission.getId()).willReturn(1);
+        BDDMockito.given(permission.getName()).willReturn("Administrador");
 
         //ACT
         ObjectMapper om = new ObjectMapper();
@@ -133,17 +139,13 @@ class CategoryControllerTest {
 
 
     @Test
-    @DisplayName("Update Category with correct fields and finding register should return status 200")
+    @DisplayName("Update Product should return status 200")
     void updateSuccess() throws Exception {
         //ARRANGE
-        BDDMockito.given(category.getId()).willReturn(1);
         String json = "{" +
-                    "\"id\": 1," +
-                    "\"name\": \"Test Test Category\"" +
+                "\"id\": 1," +
+                "\"name\": \"Test Product\"" +
                 "}";
-        BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
-        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
-
 
         //ACT
         var response = mockMvc.perform(
@@ -157,11 +159,12 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Delete Category finding register should return status 200")
+    @DisplayName("Delete Product should return status 200")
     void deleteSuccess() throws Exception {
         //ARRANGE
         BDDMockito.given(category.getId()).willReturn(1);
-        BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Category(1,"Test Category")));
+        //BDDMockito.given(categoryRepository.findById(category.getId())).willReturn(Optional.of(new Product(1,"Test Product")));
+        BDDMockito.given(categoryRepository.existsById(category.getId())).willReturn(true);
 
         //ACT
         var response = mockMvc.perform(
@@ -172,6 +175,5 @@ class CategoryControllerTest {
         //ASSERT
         assertEquals(200, response.getStatus());
     }
-
 
 }

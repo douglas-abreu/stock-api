@@ -19,19 +19,19 @@ public class CategoryController {
 
     private final CategoryService service;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<ApiResponse<Category>> save(@RequestBody Category user) {
         ApiResponse<Category> response = service.saveCategory(user);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<ApiResponse<Category>> update(@RequestBody Category user) {
         ApiResponse<Category> response = service.updateCategory(user);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping ("/list")
+    @GetMapping ("")
     public ResponseEntity<ApiResponse<PaginatedData<Category>>> getAll(@PageableDefault Pageable pageable, CategoryCriteria criteria) {
         ApiResponse<PaginatedData<Category>> response = service.categoryList(pageable, criteria);
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -39,8 +39,8 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> deleteCategory(@PathVariable Integer id){
-        ApiResponse<?> amendmentApiResponse = service.deleteCategory(id);
-        return ResponseEntity.status(amendmentApiResponse.getStatus()).body(amendmentApiResponse);
+        ApiResponse<?> response = service.deleteCategory(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 

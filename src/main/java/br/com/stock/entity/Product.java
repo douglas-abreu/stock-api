@@ -2,10 +2,14 @@ package br.com.stock.entity;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(schema = "entidades", name = "produtos")
 public class Product {
 
@@ -28,9 +32,5 @@ public class Product {
     @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private Category category;
-
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "fabricante_id")
-    private Manufacturer manufacturer;
 
 }

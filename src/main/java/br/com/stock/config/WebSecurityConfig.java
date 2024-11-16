@@ -24,7 +24,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-	private final String[] PUBLIC_PATHS = { "/authentication/**"};
+	private final String[] PUBLIC_PATHS = { "/authentication/**","/category/**","/product/**"};
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
